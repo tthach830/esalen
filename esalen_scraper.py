@@ -128,7 +128,10 @@ def get_all_availability() -> Dict[str, Dict]:
 
 if __name__ == "__main__":
     results = get_all_availability()
-    results["last_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Set timestamp to PST (UTC-8)
+    pst_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-8)))
+    results["last_updated"] = pst_now.strftime("%Y-%m-%d %H:%M:%S") + " PST"
     
     # Save to data.json for the static website
     with open("data.json", "w") as f:
