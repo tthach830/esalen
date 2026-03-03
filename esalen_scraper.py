@@ -129,9 +129,17 @@ def get_all_availability() -> Dict[str, Dict]:
 if __name__ == "__main__":
     results = get_all_availability()
     
-    # Set timestamp to PST (UTC-8)
-    pst_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-8)))
-    results["last_updated"] = pst_now.strftime("%Y-%m-%d %H:%M:%S") + " PST"
+    # Set timestamp to PST/PDT automatically
+    # Using the timezone setting for America/Los_Angeles if available, or fallback
+    import zoneinfo
+    try:
+        pst_tz = zoneinfo.ZoneInfo("America/Los_Angeles")
+        pst_now = datetime.datetime.now(pst_tz)
+    except Exception:
+        # Fallback to simple -8 offset if tzdata is missing
+        pst_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-8)))
+        
+    results["last_updated"] = pst_now.strftime("%Y-%m-%d %I:%M:%S %p") + " PST"
     
     # Save to data.json for the static website
     with open("data.json", "w") as f:
