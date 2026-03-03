@@ -465,7 +465,8 @@
                 resultsGrid.innerHTML = '';
                 displayResults(data);
                 lastUpdateTime = data.last_updated;
-                statusMsg.textContent = 'Last Updated: ' + (lastUpdateTime || 'Unknown');
+                const timeStr = (lastUpdateTime && !lastUpdateTime.endsWith('PST')) ? lastUpdateTime + ' PST' : (lastUpdateTime || 'Unknown');
+                statusMsg.textContent = 'Last Updated: ' + timeStr;
                 statusMsg.style.color = 'var(--text-muted)';
             } catch (err) {
                 console.error('Initial load failed:', err);
@@ -487,7 +488,8 @@
                         lastUpdateTime = data.last_updated;
                         resultsGrid.innerHTML = '';
                         displayResults(data);
-                        statusMsg.textContent = 'Scan Complete! Updated at: ' + lastUpdateTime;
+                        const timeStr = lastUpdateTime.endsWith('PST') ? lastUpdateTime : lastUpdateTime + ' PST';
+                        statusMsg.textContent = 'Scan Complete! Updated at: ' + timeStr;
                         setLoading(false);
                     }
                 } catch (err) {
