@@ -363,6 +363,7 @@
                 <div id="spinner" class="spinner"></div>
                 <i id="btnIcon" class="fa-solid fa-arrows-rotate"></i>
             </button>
+            <p id="statusMsg" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);"></p>
 
             <div id="settingsPanel"
                 style="margin-top: 1.5rem; display: none; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
@@ -392,6 +393,7 @@
         const spinner = document.getElementById('spinner');
         const btnIcon = document.getElementById('btnIcon');
         const resultsGrid = document.getElementById('resultsGrid');
+        const statusMsg = document.getElementById('statusMsg');
         const ghTokenInput = document.getElementById('ghToken');
         const saveTokenBtn = document.getElementById('saveTokenBtn');
         const settingsPanel = document.getElementById('settingsPanel');
@@ -427,6 +429,7 @@
             }
 
             setLoading(true);
+            statusMsg.textContent = 'Triggering fresh scan on GitHub...';
 
             try {
                 // 1. Trigger GitHub Action
@@ -441,6 +444,7 @@
                 });
 
                 if (triggerRes.status === 204) {
+                    statusMsg.textContent = 'Scan started! Waiting for results... (takes ~2-3 mins)';
                     startPolling();
                 } else {
                     const errorData = await triggerRes.json();
@@ -461,6 +465,9 @@
                 resultsGrid.innerHTML = '';
                 displayResults(data);
                 lastUpdateTime = data.last_updated;
+                const timeStr = (lastUpdateTime && !lastUpdateTime.endsWith('PST')) ? lastUpdateTime + ' PST' : (lastUpdateTime || 'Unknown');
+                statusMsg.textContent = 'Last Updated: ' + timeStr;
+                statusMsg.style.color = 'var(--text-muted)';
             } catch (err) {
                 console.error('Initial load failed:', err);
             }
@@ -481,6 +488,8 @@
                         lastUpdateTime = data.last_updated;
                         resultsGrid.innerHTML = '';
                         displayResults(data);
+                        const timeStr = lastUpdateTime.endsWith('PST') ? lastUpdateTime : lastUpdateTime + ' PST';
+                        statusMsg.textContent = 'Scan Complete! Updated at: ' + timeStr;
                         setLoading(false);
                     }
                 } catch (err) {
@@ -497,12 +506,15 @@
         }
 
         function showError(msg) {
-            alert('Error: ' + msg);
+            statusMsg.textContent = 'Error: ' + msg;
+            statusMsg.style.color = '#fb7185';
         }
 
         function displayResults(results) {
             let delay = 0;
             for (const [dept, info] of Object.entries(results)) {
+                if (dept === 'last_updated') continue;
+
                 const card = createCard(dept, info);
                 resultsGrid.appendChild(card);
 
