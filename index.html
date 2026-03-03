@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esalen Volunteer Availability</title>
+    <!-- Modern Typography -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Inter:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --primary-glow: rgba(255, 107, 107, 0.5);
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            z-index: 1;
+        }
+
+        /* Hero Section */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo-container {
+            margin-bottom: 1rem;
+        }
+
+        .logo-container i {
+            font-size: 3rem;
+            color: var(--primary);
+            filter: drop-shadow(0 0 10px var(--primary-glow));
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #fff, var(--accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Action Section */
+        .action-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .btn-check {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 20px var(--primary-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-check:hover:not(:disabled) {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .btn-check:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .btn-check:disabled {
+            background: #475569;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .result-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .result-card.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dept-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-available {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .status-none {
+            background: rgba(244, 63, 94, 0.2);
+            color: #fb7185;
+            border: 1px solid rgba(251, 113, 133, 0.3);
+        }
+
+        .status-error {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .date-list {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+
+        .date-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-left: 3px solid var(--accent);
+        }
+
+        .date-item i {
+            color: var(--accent);
+            font-size: 0.8rem;
+        }
+
+        .no-dates {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .btn-view {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: color 0.2s;
+        }
+
+        .btn-view:hover {
+            color: var(--text-main);
+        }
+
+        /* Animations */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Background blur blobs */
+        .blob {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(100px);
+            opacity: 0.1;
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        .blob-1 {
+            top: 10%;
+            left: 10%;
+            background: var(--primary);
+        }
+
+        .blob-2 {
+            bottom: 10%;
+            right: 10%;
+            background: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .action-card {
+                padding: 1.5rem;
+            }
+
+            .btn-check {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <i class="fa-solid fa-water-ladder"></i>
+            </div>
+            <h1>Esalen Explorer</h1>
+            <p>Volunteer Day Pass Availability Checker</p>
+        </header>
+
+        <section class="action-card">
+            <button id="checkBtn" class="btn-check">
+                <span id="btnText">Check Availability</span>
+                <div id="spinner" class="spinner"></div>
+                <i id="btnIcon" class="fa-solid fa-magnifying-glass"></i>
+            </button>
+            <p id="statusMsg" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);"></p>
+        </section>
+
+        <main id="resultsGrid" class="results-grid">
+            <!-- Results will be injected here -->
+        </main>
+    </div>
+
+    <script>
+        const checkBtn = document.getElementById('checkBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('spinner');
+        const btnIcon = document.getElementById('btnIcon');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const statusMsg = document.getElementById('statusMsg');
+
+        // Initial load
+        window.addEventListener('DOMContentLoaded', refreshData);
+
+        checkBtn.addEventListener('click', refreshData);
+
+        async function refreshData() {
+            setLoading(true);
+            statusMsg.textContent = 'Updating from the latest data...';
+            statusMsg.style.color = 'var(--text-muted)';
+
+            try {
+                // Fetch the static data.json file
+                // Adding a cache-buster query param to ensure we get the latest push
+                const response = await fetch('data.json?t=' + new Date().getTime());
+
+                if (!response.ok) {
+                    throw new Error('Data file not found. Make sure the scraper has run.');
+                }
+
+                const data = await response.json();
+                resultsGrid.innerHTML = '';
+                displayResults(data);
+
+                if (data.last_updated) {
+                    statusMsg.textContent = 'Last Updated: ' + data.last_updated;
+                } else {
+                    statusMsg.textContent = 'Data loaded successfully.';
+                }
+            } catch (err) {
+                console.error(err);
+                resultsGrid.innerHTML = '';
+                showError('Could not load data.json. Ensure the GitHub Action has completed at least once.');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function setLoading(isLoading) {
+            checkBtn.disabled = isLoading;
+            spinner.style.display = isLoading ? 'block' : 'none';
+            btnIcon.style.display = isLoading ? 'none' : 'block';
+            btnText.textContent = isLoading ? 'Refreshing...' : 'Refresh Data';
+        }
+
+        function showError(msg) {
+            statusMsg.textContent = 'Error: ' + msg;
+            statusMsg.style.color = '#fb7185';
+        }
+
+        function displayResults(results) {
+            let delay = 0;
+            for (const [dept, info] of Object.entries(results)) {
+                const card = createCard(dept, info);
+                resultsGrid.appendChild(card);
+
+                // Staggered entry animation
+                setTimeout(() => {
+                    card.classList.add('active');
+                }, delay);
+                delay += 150;
+            }
+        }
+
+        function createCard(dept, info) {
+            const card = document.createElement('div');
+            card.className = 'result-card';
+
+            let statusClass = 'status-none';
+            if (info.status === 'Available') statusClass = 'status-available';
+            if (info.error) statusClass = 'status-error';
+
+            const datesHtml = info.available_dates && info.available_dates.length > 0
+                ? info.available_dates.map(date => `<li class="date-item"><i class="fa-solid fa-calendar-check"></i> ${date}</li>`).join('')
+                : '<p class="no-dates">No available shifts found for the next 14 days.</p>';
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="dept-name">${dept}</span>
+                    <span class="status-badge ${statusClass}">${info.error ? 'Blocked' : info.status}</span>
+                </div>
+                <div class="card-body">
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+                        <i class="fa-solid fa-clock-rotate-left"></i> ${info.window || 'N/A'}
+                    </p>
+                    <ul class="date-list">
+                        ${datesHtml}
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="${info.url}" target="_blank" class="btn-view">
+                        View Portal <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+            `;
+            return card;
+        }
+    </script>
+</body>
+
+</html>

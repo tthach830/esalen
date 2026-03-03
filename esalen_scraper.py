@@ -1,5 +1,6 @@
 import json
 import logging
+import datetime
 from typing import Dict, List
 from playwright.sync_api import sync_playwright
 
@@ -103,4 +104,12 @@ def get_all_availability() -> Dict[str, Dict]:
     return results
 
 if __name__ == "__main__":
-    print(json.dumps(get_all_availability(), indent=2))
+    results = get_all_availability()
+    results["last_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Save to data.json for the static website
+    with open("data.json", "w") as f:
+        json.dump(results, f, indent=2)
+    
+    print(f"Scrape completed at {results['last_updated']}. Data saved to data.json.")
+    print(json.dumps(results, indent=2))
