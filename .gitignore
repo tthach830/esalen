@@ -3,7 +3,7 @@ run_esalen_notifier.bat
 .env
 
 # Data
-data.json
+# data.json (Tracked for GitHub Pages)
 
 # Logs
 *.log
