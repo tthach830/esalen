@@ -66,26 +66,26 @@ def extract_availability(url: str, playwright) -> Dict:
 
         logger.info(f"Booking Window: {date_window}")
 
-        # The dates are actually structured inside cards like:
-        # div.col-sm-4.ticket-box > div.panel
-        # Inside the panel there's the string 'SOLD OUT' or a 'Select' button
-        # But wait, looking at the previous manual check, the calendar is what we want
-        # Let's see if we can just scrape the selectable dates from the datepicker.
-        
         # We need to click the "Arrival" date field to open the calendar
         try:
-            arrival_input = page.query_selector('input[name="arrival_date"]')
+            date_header = page.query_selector('h2.rs-heading-dates')
+            if date_header:
+                date_header.click(force=True)
+                page.wait_for_timeout(500)
+                
+            arrival_input = page.query_selector('input[name="start_date"]') or page.query_selector('#rs-stay-start')
             if arrival_input:
-                arrival_input.click()
+                page.evaluate('document.querySelector("label[for=\'rs-stay-start\']").click()')
                 page.wait_for_timeout(1000) # Give calendar time to render
                 
                 # Check for active (selectable) cells vs disabled cells
-                # Usually datpicker cells have class 'active' or don't have 'disabled'
-                selectable_days = page.query_selector_all('td.day:not(.disabled)')
+                # The selectable dates are actually anchor tags with class ui-state-default
+                # Disabled dates are spanned text
+                selectable_nodes = page.query_selector_all('table.ui-datepicker-calendar a.ui-state-default')
                 
                 available_dates = []
-                for day in selectable_days:
-                    available_dates.append(day.inner_text().strip())
+                for node in selectable_nodes:
+                    available_dates.append(node.inner_text().strip())
                 
                 logger.info(f"Found {len(available_dates)} selectable days in current month view.")
                 
