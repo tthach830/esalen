@@ -359,19 +359,25 @@
                 <i class="fa-solid fa-bell"></i> Telegram Notifications Active
             </div>
             <button id="checkBtn" class="btn-check">
-                <span id="btnText">Refresh Data</span>
+                <span id="btnText">Refresh & Scan</span>
                 <div id="spinner" class="spinner"></div>
                 <i id="btnIcon" class="fa-solid fa-arrows-rotate"></i>
             </button>
             <p id="statusMsg" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);"></p>
 
-            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border);">
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-                    Want a fresh scan right now?
-                </p>
-                <a href="https://github.com/tthach830/esalen/actions" target="_blank" class="btn-check"
-                    style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); color: var(--accent); box-shadow: none; padding: 0.8rem 1.5rem; font-size: 1rem;">
-                    <i class="fa-brands fa-github"></i> Trigger Manual Update
+            <div id="settingsPanel"
+                style="margin-top: 1.5rem; display: none; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
+                <input type="password" id="ghToken" placeholder="Enter GitHub PAT"
+                    style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; padding: 0.5rem 1rem; border-radius: 8px; width: 250px; font-size: 0.8rem;">
+                <button id="saveTokenBtn"
+                    style="background: var(--accent); border: none; color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; margin-left: 0.5rem;">Save
+                    Token</button>
+            </div>
+
+            <div style="margin-top: 1rem; text-align: right;">
+                <a href="#" id="toggleSettings"
+                    style="color: var(--text-muted); font-size: 0.8rem; text-decoration: none;">
+                    <i class="fa-solid fa-gear"></i> Settings
                 </a>
             </div>
         </section>
@@ -388,49 +394,113 @@
         const btnIcon = document.getElementById('btnIcon');
         const resultsGrid = document.getElementById('resultsGrid');
         const statusMsg = document.getElementById('statusMsg');
+        const ghTokenInput = document.getElementById('ghToken');
+        const saveTokenBtn = document.getElementById('saveTokenBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const toggleSettings = document.getElementById('toggleSettings');
+
+        let isPolling = false;
+        let lastUpdateTime = null;
 
         // Initial load
-        window.addEventListener('DOMContentLoaded', refreshData);
+        window.addEventListener('DOMContentLoaded', () => {
+            loadRefresh();
+            const savedToken = localStorage.getItem('gh_pat');
+            if (savedToken) ghTokenInput.value = savedToken;
+        });
 
-        checkBtn.addEventListener('click', refreshData);
+        toggleSettings.addEventListener('click', (e) => {
+            e.preventDefault();
+            settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
+        });
 
-        async function refreshData() {
+        saveTokenBtn.addEventListener('click', () => {
+            localStorage.setItem('gh_pat', ghTokenInput.value);
+            alert('Token saved securely in your browser.');
+            settingsPanel.style.display = 'none';
+        });
+
+        checkBtn.addEventListener('click', async () => {
+            const token = localStorage.getItem('gh_pat');
+            if (!token) {
+                settingsPanel.style.display = 'block';
+                showError('Please enter a GitHub Personal Access Token to trigger a scan.');
+                return;
+            }
+
             setLoading(true);
-            statusMsg.textContent = 'Updating from the latest data...';
-            statusMsg.style.color = 'var(--text-muted)';
+            statusMsg.textContent = 'Triggering fresh scan on GitHub...';
 
             try {
-                // Fetch the static data.json file
-                // Adding a cache-buster query param to ensure we get the latest push
-                const response = await fetch('data.json?t=' + new Date().getTime());
+                // 1. Trigger GitHub Action
+                const triggerRes = await fetch('https://api.github.com/repos/tthach830/esalen/actions/workflows/scrape.yml/dispatches', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ref: 'main' })
+                });
 
-                if (!response.ok) {
-                    throw new Error('Data file not found. Make sure the scraper has run.');
-                }
-
-                const data = await response.json();
-                resultsGrid.innerHTML = '';
-                displayResults(data);
-
-                if (data.last_updated) {
-                    statusMsg.textContent = 'Last Updated: ' + data.last_updated;
+                if (triggerRes.status === 204) {
+                    statusMsg.textContent = 'Scan started! Waiting for results... (takes ~2-3 mins)';
+                    startPolling();
                 } else {
-                    statusMsg.textContent = 'Data loaded successfully.';
+                    const errorData = await triggerRes.json();
+                    throw new Error(errorData.message || 'Failed to trigger scan.');
                 }
             } catch (err) {
                 console.error(err);
-                resultsGrid.innerHTML = '';
-                showError('Could not load data.json. Ensure the GitHub Action has completed at least once.');
-            } finally {
+                showError('Error: ' + err.message);
                 setLoading(false);
             }
+        });
+
+        async function loadRefresh() {
+            try {
+                const response = await fetch('data.json?t=' + new Date().getTime());
+                if (!response.ok) return;
+                const data = await response.json();
+                resultsGrid.innerHTML = '';
+                displayResults(data);
+                lastUpdateTime = data.last_updated;
+                statusMsg.textContent = 'Last Updated: ' + (lastUpdateTime || 'Unknown');
+                statusMsg.style.color = 'var(--text-muted)';
+            } catch (err) {
+                console.error('Initial load failed:', err);
+            }
+        }
+
+        function startPolling() {
+            if (isPolling) return;
+            isPolling = true;
+
+            const pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('data.json?t=' + new Date().getTime());
+                    const data = await response.json();
+
+                    if (data.last_updated !== lastUpdateTime) {
+                        clearInterval(pollInterval);
+                        isPolling = false;
+                        lastUpdateTime = data.last_updated;
+                        resultsGrid.innerHTML = '';
+                        displayResults(data);
+                        statusMsg.textContent = 'Scan Complete! Updated at: ' + lastUpdateTime;
+                        setLoading(false);
+                    }
+                } catch (err) {
+                    console.error('Polling error:', err);
+                }
+            }, 30000); // Poll every 30 seconds
         }
 
         function setLoading(isLoading) {
             checkBtn.disabled = isLoading;
             spinner.style.display = isLoading ? 'block' : 'none';
             btnIcon.style.display = isLoading ? 'none' : 'block';
-            btnText.textContent = isLoading ? 'Refreshing...' : 'Refresh Data';
+            btnText.textContent = isLoading ? 'Scraping...' : 'Refresh & Scan';
         }
 
         function showError(msg) {
