@@ -1,6 +1,8 @@
 import json
 import logging
 import datetime
+import os
+import requests
 from typing import Dict, List
 from playwright.sync_api import sync_playwright
 
@@ -12,6 +14,27 @@ URLS = {
     "Cabins": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-cabins/?form=1&lang=en",
     "Farm & Garden": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-farm-garden/?form=1&lang=en"
 }
+
+def send_telegram_message(bot_token: str, chat_id: str, message: str):
+    """Sends a Telegram notification."""
+    if not bot_token or not chat_id:
+        logger.warning("Telegram credentials not found. Skipping notification.")
+        return
+    
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": message,
+        "parse_mode": "Markdown"
+    }
+    try:
+        response = requests.post(url, json=payload, timeout=10)
+        if response.status_code == 200:
+            logger.info("Telegram notification sent successfully.")
+        else:
+            logger.error(f"Failed to send Telegram: {response.text}")
+    except Exception as e:
+        logger.error(f"Error sending Telegram: {e}")
 
 def extract_availability(url: str, playwright) -> Dict:
     """Scrapes the Esalen volunteer booking page for open shifts."""
@@ -111,5 +134,23 @@ if __name__ == "__main__":
     with open("data.json", "w") as f:
         json.dump(results, f, indent=2)
     
+    # Check for availability and notify via Telegram
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+    
+    any_available = False
+    message = "*Esalen Volunteer Availability Alert*\n\n"
+    
+    for dept, info in results.items():
+        if dept == "last_updated": continue
+        if info.get("status") == "Available":
+            any_available = True
+            dates_str = ", ".join(info.get("available_dates", []))
+            message += f"✅ *{dept}*: Available! ({dates_str})\n[Book Here]({info['url']})\n\n"
+    
+    if any_available:
+        send_telegram_message(bot_token, chat_id, message)
+    
     print(f"Scrape completed at {results['last_updated']}. Data saved to data.json.")
-    print(json.dumps(results, indent=2))
+    if any_available:
+        print("Availability found and Telegram notification triggered.")

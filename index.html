@@ -354,12 +354,26 @@
         </header>
 
         <section class="action-card">
+            <div
+                style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.85rem; color: var(--success);">
+                <i class="fa-solid fa-bell"></i> Telegram Notifications Active
+            </div>
             <button id="checkBtn" class="btn-check">
-                <span id="btnText">Check Availability</span>
+                <span id="btnText">Refresh Data</span>
                 <div id="spinner" class="spinner"></div>
-                <i id="btnIcon" class="fa-solid fa-magnifying-glass"></i>
+                <i id="btnIcon" class="fa-solid fa-arrows-rotate"></i>
             </button>
             <p id="statusMsg" style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);"></p>
+
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border);">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Want a fresh scan right now?
+                </p>
+                <a href="https://github.com/tthach830/esalen/actions" target="_blank" class="btn-check"
+                    style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); color: var(--accent); box-shadow: none; padding: 0.8rem 1.5rem; font-size: 1rem;">
+                    <i class="fa-brands fa-github"></i> Trigger Manual Update
+                </a>
+            </div>
         </section>
 
         <main id="resultsGrid" class="results-grid">
