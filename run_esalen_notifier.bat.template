@@ -1,0 +1,6 @@
+@echo off
+rem TEMPLATE: Copy this to run_esalen_notifier.bat and add your real credentials.
+set TELEGRAM_BOT_TOKEN=YOUR_BOT_TOKEN_HERE
+set TELEGRAM_CHAT_ID=YOUR_CHAT_ID_HERE
+title Esalen Availability Telegram Notifier
+python send_telegram.py
