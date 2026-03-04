@@ -149,6 +149,10 @@ if __name__ == "__main__":
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat_id = os.environ.get("TELEGRAM_CHAT_ID")
     
+    if not bot_token or not chat_id:
+        logger.warning("Telegram credentials not found. Notifications will fail silently if availability is found.")
+        print("WARNING: Telegram credentials not found. Skipping notification.")
+    
     any_available = False
     message = "*Esalen Volunteer Availability Alert*\n\n"
     
