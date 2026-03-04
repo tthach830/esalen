@@ -92,14 +92,27 @@ def extract_availability(url: str, playwright) -> Dict:
                 if available_dates:
                      # If we found available dates from the calendar, that's great
                      # But we also need to know what month it is. The calendar header usually has it.
-                     month_header = page.query_selector('th.datepicker-switch')
+                     month_header = page.query_selector('.ui-datepicker-title')
                      month_year = month_header.inner_text().strip() if month_header else "Current Month"
+                     # Remove extra whitespace/newlines from month_year
+                     month_year = ' '.join(month_year.split())
+                     
+                     # Format "Mar 2026" and "17" to "March 17, 2026"
+                     formatted_dates = []
+                     for d in available_dates:
+                         try:
+                             # Example month_year: "Mar 2026"
+                             parsed_date = datetime.datetime.strptime(f"{month_year} {d}", "%b %Y %d")
+                             formatted_dates.append(parsed_date.strftime("%B %d, %Y"))
+                         except Exception as e:
+                             # Fallback if parsing fails
+                             formatted_dates.append(f"{month_year} {d}")
                      
                      browser.close()
                      return {
                          "status": "Available",
                          "window": date_window,
-                         "available_dates": [f"{month_year} {d}" for d in available_dates]
+                         "available_dates": formatted_dates
                      }
         except Exception as e:
             logger.error(f"Failed parsing calendar: {e}")

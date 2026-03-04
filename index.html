@@ -490,6 +490,7 @@
                         displayResults(data);
                         const timeStr = lastUpdateTime.endsWith('PST') ? lastUpdateTime : lastUpdateTime + ' PST';
                         statusMsg.textContent = 'Scan Complete! Updated at: ' + timeStr;
+                        setTimeout(() => window.location.reload(), 2000);
                         setLoading(false);
                     }
                 } catch (err) {
