@@ -160,7 +160,11 @@ if __name__ == "__main__":
             message += f"✅ *{dept}*: Available! ({dates_str})\n[Book Here]({info['url']})\n\n"
     
     if any_available:
-        send_telegram_message(bot_token, chat_id, message)
+        try:
+            from send_telegram import send_telegram_message
+            send_telegram_message(bot_token, chat_id, message)
+        except Exception as e:
+            logger.error(f"Failed to send telegram message: {e}")
     
     print(f"Scrape completed at {results['last_updated']}. Data saved to data.json.")
     if any_available:
