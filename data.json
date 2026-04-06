@@ -3,11 +3,8 @@
     "status": "Available",
     "window": "April 7, 2026 and April 20, 2026",
     "available_dates": [
-      "April 08, 2026",
-      "April 09, 2026",
-      "April 11, 2026",
-      "April 15, 2026",
-      "April 18, 2026"
+      "April 10, 2026",
+      "April 15, 2026"
     ],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-kitchen/?form=1&lang=en"
   },
@@ -18,12 +15,10 @@
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-cabins/?form=1&lang=en"
   },
   "Farm & Garden": {
-    "status": "Available",
+    "status": "No availability",
     "window": "April 7, 2026 and April 20, 2026",
-    "available_dates": [
-      "April 07, 2026"
-    ],
+    "available_dates": [],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-farm-garden/?form=1&lang=en"
   },
-  "last_updated": "2026-04-06 08:53:56 AM PST"
+  "last_updated": "2026-04-06 12:08:19 PM PST"
 }
