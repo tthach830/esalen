@@ -9,11 +9,9 @@
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-kitchen/?form=1&lang=en"
   },
   "Cabins": {
-    "status": "Available",
+    "status": "No availability",
     "window": "May 22, 2026 and June 4, 2026",
-    "available_dates": [
-      "May Jun 2026 31"
-    ],
+    "available_dates": [],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-cabins/?form=1&lang=en"
   },
   "Farm & Garden": {
@@ -24,5 +22,5 @@
     ],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-farm-garden/?form=1&lang=en"
   },
-  "last_updated": "2026-05-21 06:01:37 PM PST"
+  "last_updated": "2026-05-21 09:31:32 PM PST"
 }
