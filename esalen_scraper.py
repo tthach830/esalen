@@ -74,52 +74,82 @@ def extract_availability(url: str, playwright) -> Dict:
                 page.wait_for_timeout(500)
                 
             arrival_input = page.query_selector('input[name="start_date"]') or page.query_selector('#rs-stay-start')
+            available_dates = []
             if arrival_input:
                 page.evaluate('document.querySelector("label[for=\'rs-stay-start\']").click()')
                 page.wait_for_timeout(1000) # Give calendar time to render
                 
-                # Check for active (selectable) cells vs disabled cells
-                # The selectable dates are actually anchor tags with class ui-state-default
-                # Disabled dates are spanned text
-                selectable_nodes = page.query_selector_all('table.ui-datepicker-calendar a.ui-state-default')
-                
-                available_dates = []
-                for node in selectable_nodes:
-                    available_dates.append(node.inner_text().strip())
-                
-                logger.info(f"Found {len(available_dates)} selectable days in current month view.")
-                
-                if available_dates:
-                     # If we found available dates from the calendar, that's great
-                     # But we also need to know what month it is. The calendar header usually has it.
-                     month_header = page.query_selector('.ui-datepicker-title')
-                     month_year = month_header.inner_text().strip() if month_header else "Current Month"
-                     # Remove extra whitespace/newlines from month_year
-                     month_year = ' '.join(month_year.split())
-                     
-                     # Format "Mar 2026" and "17" to "Fri, March 17, 2026"
-                     formatted_dates = []
-                     for d in available_dates:
-                         try:
-                             # Example month_year: "Mar 2026"
-                             parsed_date = datetime.datetime.strptime(f"{month_year} {d}", "%b %Y %d")
-                             day_name = parsed_date.strftime("%a")
-                             formatted_dates.append(f"{day_name}, {parsed_date.strftime('%B %d, %Y')}")
-                         except Exception as e:
-                             # Fallback if parsing fails
-                             formatted_dates.append(f"{month_year} {d}")
-                     
-                     browser.close()
-                     return {
-                         "status": "Available",
-                         "window": date_window,
-                         "available_dates": formatted_dates
-                     }
+                months_checked = 0
+                max_months = 3
+                while months_checked < max_months:
+                    months_checked += 1
+                    
+                    month_text = page.evaluate('''() => {
+                        const sel = document.querySelector("select.ui-datepicker-month");
+                        if (sel) return sel.options[sel.selectedIndex].text;
+                        const span = document.querySelector(".ui-datepicker-month");
+                        if (span) return span.textContent.trim();
+                        return "";
+                    }''')
+                    year_text = page.evaluate('''() => {
+                        const sel = document.querySelector("select.ui-datepicker-year");
+                        if (sel) return sel.options[sel.selectedIndex].text;
+                        const span = document.querySelector(".ui-datepicker-year");
+                        if (span) return span.textContent.trim();
+                        return "";
+                    }''')
+                    
+                    if not month_text or not year_text:
+                        month_header = page.query_selector('.ui-datepicker-title')
+                        month_year = month_header.inner_text().strip() if month_header else "Current Month"
+                        month_year = ' '.join(month_year.split())
+                    else:
+                        month_year = f"{month_text} {year_text}"
+                    
+                    selectable_nodes = page.query_selector_all('table.ui-datepicker-calendar a.ui-state-default')
+                    month_avail_dates = []
+                    for node in selectable_nodes:
+                        month_avail_dates.append(node.inner_text().strip())
+                    
+                    logger.info(f"Found {len(month_avail_dates)} selectable days in month {month_year}.")
+                    
+                    for d in month_avail_dates:
+                        try:
+                            parsed_date = None
+                            for fmt in ("%b %Y %d", "%B %Y %d"):
+                                try:
+                                    parsed_date = datetime.datetime.strptime(f"{month_year} {d}", fmt)
+                                    break
+                                except ValueError:
+                                    continue
+                            
+                            if parsed_date:
+                                day_name = parsed_date.strftime("%a")
+                                available_dates.append(f"{day_name}, {parsed_date.strftime('%B %d, %Y')}")
+                            else:
+                                available_dates.append(f"{month_year} {d}")
+                        except Exception as e:
+                            available_dates.append(f"{month_year} {d}")
+                    
+                    next_button = page.query_selector('.ui-datepicker-next:not(.ui-state-disabled)')
+                    if next_button:
+                        logger.info("Navigating to next month calendar view...")
+                        next_button.click()
+                        page.wait_for_timeout(1000)
+                    else:
+                        break
         except Exception as e:
             logger.error(f"Failed parsing calendar: {e}")
 
         browser.close()
         
+        if available_dates:
+            return {
+                "status": "Available",
+                "window": date_window,
+                "available_dates": available_dates
+            }
+            
         # If we couldn't find any selectable days, just report no availability
         return {
             "status": "No availability",

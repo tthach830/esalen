@@ -3,6 +3,9 @@ import requests
 import sys
 
 def send_telegram_message(bot_token, chat_id, message):
+    print("--- TELEGRAM MESSAGE CONTENT ---")
+    print(message)
+    print("--------------------------------")
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     payload = {
         "chat_id": chat_id,

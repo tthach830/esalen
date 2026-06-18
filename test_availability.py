@@ -31,6 +31,18 @@ with sync_playwright() as p:
             print("--- CALENDAR HTML ---")
             print(calendar_div.inner_html())
             print("---------------------")
+            
+            # Try to click next month
+            next_button = page.query_selector('.ui-datepicker-next:not(.ui-state-disabled)')
+            if next_button:
+                print("Clicking next month...")
+                next_button.click()
+                page.wait_for_timeout(1000)
+                calendar_div = page.query_selector('.ui-datepicker') or page.query_selector('#ui-datepicker-div')
+                if calendar_div:
+                    print("--- NEXT MONTH CALENDAR HTML ---")
+                    print(calendar_div.inner_html())
+                    print("---------------------")
         else:
             print("Could not find calendar div. HTML dump:")
             print(page.content())
