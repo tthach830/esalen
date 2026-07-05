@@ -1,8 +1,10 @@
 {
   "Kitchen": {
-    "status": "No availability",
+    "status": "Available",
     "window": "July 6, 2026 and July 19, 2026",
-    "available_dates": [],
+    "available_dates": [
+      "Mon, July 06, 2026"
+    ],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-kitchen/?form=1&lang=en"
   },
   "Cabins": {
@@ -12,10 +14,12 @@
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-cabins/?form=1&lang=en"
   },
   "Farm & Garden": {
-    "status": "No availability",
+    "status": "Available",
     "window": "July 7, 2026 and July 19, 2026",
-    "available_dates": [],
+    "available_dates": [
+      "Tue, July 07, 2026"
+    ],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-farm-garden/?form=1&lang=en"
   },
-  "last_updated": "2026-07-05 08:31:33 AM PST"
+  "last_updated": "2026-07-05 11:28:43 AM PST"
 }
