@@ -11,17 +11,16 @@
     "status": "Available",
     "window": "July 26, 2026 and August 8, 2026",
     "available_dates": [
+      "Sun, July 26, 2026",
       "Fri, August 07, 2026"
     ],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-cabins/?form=1&lang=en"
   },
   "Farm & Garden": {
-    "status": "Available",
+    "status": "No availability",
     "window": "July 28, 2026 and August 8, 2026",
-    "available_dates": [
-      "Fri, August 07, 2026"
-    ],
+    "available_dates": [],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-farm-garden/?form=1&lang=en"
   },
-  "last_updated": "2026-07-25 11:23:21 AM PST"
+  "last_updated": "2026-07-25 02:21:38 PM PST"
 }
