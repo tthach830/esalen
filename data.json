@@ -1,25 +1,15 @@
 {
   "Kitchen": {
-    "status": "Available",
-    "window": "August 4, 2026 and August 17, 2026",
-    "available_dates": [
-      "Sun, August 16, 2026"
-    ],
+    "error": "Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-kitchen/?form=1&lang=en\", waiting until \"networkidle\"\n",
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-kitchen/?form=1&lang=en"
   },
   "Cabins": {
-    "status": "Available",
-    "window": "August 7, 2026 and August 17, 2026",
-    "available_dates": [
-      "Sun, August 16, 2026"
-    ],
+    "error": "Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-cabins/?form=1&lang=en\", waiting until \"networkidle\"\n",
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-cabins/?form=1&lang=en"
   },
   "Farm & Garden": {
-    "status": "No availability",
-    "window": "August 4, 2026 and August 17, 2026",
-    "available_dates": [],
+    "error": "Page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-farm-garden/?form=1&lang=en\", waiting until \"networkidle\"\n",
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-farm-garden/?form=1&lang=en"
   },
-  "last_updated": "2026-08-03 12:17:10 AM PST"
+  "last_updated": "2026-08-03 03:23:08 AM PST"
 }
