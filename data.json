@@ -3,8 +3,10 @@
     "status": "Available",
     "window": "October 3, 2026 and October 16, 2026",
     "available_dates": [
+      "Sun, October 04, 2026",
       "Tue, October 06, 2026",
       "Thu, October 08, 2026",
+      "Mon, October 12, 2026",
       "Wed, October 14, 2026",
       "Thu, October 15, 2026"
     ],
@@ -14,6 +16,7 @@
     "status": "Available",
     "window": "October 4, 2026 and October 16, 2026",
     "available_dates": [
+      "Sun, October 04, 2026",
       "Fri, October 09, 2026",
       "Sun, October 11, 2026"
     ],
@@ -25,5 +28,5 @@
     "available_dates": [],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-farm-garden/?form=1&lang=en"
   },
-  "last_updated": "2026-10-02 10:39:41 AM PST"
+  "last_updated": "2026-10-02 02:58:59 PM PST"
 }
