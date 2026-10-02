@@ -4,7 +4,6 @@
     "window": "October 2, 2026 and October 15, 2026",
     "available_dates": [
       "Tue, October 06, 2026",
-      "Wed, October 07, 2026",
       "Wed, October 14, 2026"
     ],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-kitchen/?form=1&lang=en"
@@ -13,7 +12,8 @@
     "status": "Available",
     "window": "October 2, 2026 and October 15, 2026",
     "available_dates": [
-      "Fri, October 02, 2026"
+      "Fri, October 02, 2026",
+      "Sun, October 11, 2026"
     ],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-cabins/?form=1&lang=en"
   },
@@ -23,5 +23,5 @@
     "available_dates": [],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-farm-garden/?form=1&lang=en"
   },
-  "last_updated": "2026-10-01 01:12:47 PM PST"
+  "last_updated": "2026-10-01 05:36:14 PM PST"
 }
