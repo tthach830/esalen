@@ -3,7 +3,11 @@
     "status": "Available",
     "window": "November 13, 2026 and November 26, 2026",
     "available_dates": [
-      "Fri, November 13, 2026"
+      "Fri, November 13, 2026",
+      "Sat, November 14, 2026",
+      "Sun, November 15, 2026",
+      "Mon, November 23, 2026",
+      "Wed, November 25, 2026"
     ],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-kitchen/?form=1&lang=en"
   },
@@ -19,5 +23,5 @@
     "available_dates": [],
     "url": "https://esalen.secure.retreat.guru/program/esalen-volunteer-day-pass-farm-garden/?form=1&lang=en"
   },
-  "last_updated": "2026-11-12 09:27:17 AM PST"
+  "last_updated": "2026-11-12 03:21:10 PM PST"
 }
